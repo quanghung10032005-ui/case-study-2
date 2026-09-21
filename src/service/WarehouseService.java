@@ -39,8 +39,10 @@ public class WarehouseService implements IPhoneManager {
         try {
             List<Phone> lists = repository.loadAll();
             for (Phone p : lists) {
-                phoneMap.put(p.getId(), p);
-                phoneList.add(p);
+                if (p != null && p.getId() != null) {
+                    phoneMap.put(p.getId().toLowerCase(), p);
+                    phoneList.add(p);
+                }
             }
 
         } catch (Exception e) {
@@ -52,7 +54,7 @@ public class WarehouseService implements IPhoneManager {
     public boolean addPhone(Phone phone) {
         // kiem tra du lieu rong hoac trung id
 
-        if (phone == null || phoneMap.containsKey(phone.getId().toLowerCase()))
+        if (phone == null || phone.getId() == null || phoneMap.containsKey(phone.getId().toLowerCase()))
             return false;
 
         phoneMap.put(phone.getId().toLowerCase(), phone);
@@ -96,7 +98,7 @@ public class WarehouseService implements IPhoneManager {
             return false;
 
         // xoa khoi map va list
-        phoneMap.remove(id.toLowerCase());
+        phoneMap.remove(phone.getId().toLowerCase());
         phoneList.remove(phone);
 
         repository.delete(id);
@@ -125,6 +127,8 @@ public class WarehouseService implements IPhoneManager {
 
     @Override
     public Phone searchBinary(String id) {
+        if (id == null)
+            return null;
         List<Phone> copy = new ArrayList<>(phoneList);
         SortById.selectionSortById(copy);
         return BinarySearch.binarySearch(copy, id);
